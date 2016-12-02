@@ -1,0 +1,34 @@
+Mapy unikalne - dany klucz jedna wartość
+klucz unikalny wartość niekoniecznie
+
+1. Drzewo binarne
+ --Lista
+	Operacje na kluczu K:
+	*operacja porównania <
+	*równość ==
+
+2. Hash mapa
+ --Tablica
+	idealnie: tyle elementów ile wystąpień kulcza
+	
+Funkcja hash:
+dla danego klucza wylicza indeks w tablicy 
+elementy tablicy wskzują na inną kolekcje (wektor lub drzewo - może być z std) PROTIP: jak użyjesz własnej listy będzie prosta iteracja
+
+funkcja hashująca:
+-std:hash + resta z dzielenia pewnie
+-reszta z dzielenia
+
+nie trzeba wymyślać operatora porównania w hash mapie (w drzewie tak)
+
+chodzenie po drzewie - złożoność liniowa
+dopisz test czy iteracja po drzewie zwraca elementy w sposób uporządkowany
+
+
+std map 
+std unordered map
+
+w javie treemap i hashmap
+16k elementów
+
+	

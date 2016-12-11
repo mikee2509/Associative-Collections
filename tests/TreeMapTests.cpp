@@ -337,101 +337,101 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNonEmptyMap_WhenCreatingCopy_ThenAllItemsAreC
     thenMapContainsItems(other, { { 753, "Rome" }, { 1789, "Paris" } });
 }
 
-//BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEmptyMap_WhenMovingToOther_ThenBothMapsAreEmpty,
-//                              K,
-//                              TestedKeyTypes)
-//{
-//  Map<K> map;
-//  Map<K> other{std::move(map)};
-//
-//  BOOST_CHECK(map.isEmpty());
-//  BOOST_CHECK(other.isEmpty());
-//}
-//
-//BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNonEmptyMap_WhenMovingToOther_ThenAllItemsAreMoved,
-//                              K,
-//                              TestedKeyTypes)
-//{
-//  Map<K> map = { { 753, "Rome" }, { 1789, "Paris" } };
-//  const Map<K> other{std::move(map)};
-//
-//  thenMapContainsItems(other, { { 753, "Rome" }, { 1789, "Paris" } });
-//  BOOST_CHECK(map.isEmpty());
-//}
-//
-//BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEmptyMap_WhenAssigningToOther_ThenOtherMapIsEmpty,
-//                              K,
-//                              TestedKeyTypes)
-//{
-//  const Map<K> map;
-//  Map<K> other = { { 42, "Alice" }, { 27, "Bob" } };
-//
-//  other = map;
-//
-//  BOOST_CHECK(other.isEmpty());
-//}
-//
-//BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNonEmptyMap_WhenAssigningToOther_ThenAllElementsAreCopied,
-//                              K,
-//                              TestedKeyTypes)
-//{
-//  Map<K> map = { { 753, "Rome" }, { 1789, "Paris" } };
-//  Map<K> other = { { 42, "Alice" }, { 27, "Bob" } };
-//
-//  other = map;
-//  map[1410] = "Grunwald";
-//
-//  thenMapContainsItems(other, { { 753, "Rome" }, { 1789, "Paris" } });
-//}
-//
-//BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEmptyMap_WhenSelfAssigning_ThenNothingHappens,
-//                              K,
-//                              TestedKeyTypes)
-//{
-//  Map<K> map;
-//
-//  map = map;
-//
-//  BOOST_CHECK(map.isEmpty());
-//}
-//
-//BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNotEmptyMap_WhenSelfAssigning_ThenNothingHappens,
-//                              K,
-//                              TestedKeyTypes)
-//{
-//  Map<K> map = { { 42, "Alice" }, { 27, "Bob" } };
-//
-//  map = map;
-//
-//  thenMapContainsItems(map, { { 42, "Alice" }, { 27, "Bob" } });
-//}
-//
-//BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEmptyMap_WhenMoveAssigning_ThenBothMapsAreEmpty,
-//                              K,
-//                              TestedKeyTypes)
-//{
-//  Map<K> map;
-//  Map<K> other = { { 42, "Alice" }, { 27, "Bob" } };
-//
-//  other = std::move(map);
-//
-//  BOOST_CHECK(other.isEmpty());
-//  BOOST_CHECK(map.isEmpty());
-//}
-//
-//BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNonEmptyMap_WhenMoveAssigning_ThenAllElementsAreMoved,
-//                              K,
-//                              TestedKeyTypes)
-//{
-//  Map<K> map = { { 753, "Rome" }, { 1789, "Paris" } };
-//  Map<K> other = { { 42, "Alice" }, { 27, "Bob" } };
-//
-//  other = std::move(map);
-//
-//  thenMapContainsItems(other, { { 753, "Rome" }, { 1789, "Paris" } });
-//  BOOST_CHECK(map.isEmpty());
-//}
-//
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEmptyMap_WhenMovingToOther_ThenBothMapsAreEmpty,
+                              K,
+                              TestedKeyTypes)
+{
+  Map<K> map;
+  Map<K> other{std::move(map)};
+
+  BOOST_CHECK(map.isEmpty());
+  BOOST_CHECK(other.isEmpty());
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNonEmptyMap_WhenMovingToOther_ThenAllItemsAreMoved,
+                              K,
+                              TestedKeyTypes)
+{
+  Map<K> map = { { 753, "Rome" }, { 1789, "Paris" } };
+  const Map<K> other{std::move(map)};
+
+  thenMapContainsItems(other, { { 753, "Rome" }, { 1789, "Paris" } });
+  BOOST_CHECK(map.isEmpty());
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEmptyMap_WhenAssigningToOther_ThenOtherMapIsEmpty,
+                              K,
+                              TestedKeyTypes)
+{
+  const Map<K> map;
+  Map<K> other = { { 42, "Alice" }, { 27, "Bob" } };
+
+  other = map;
+
+  BOOST_CHECK(other.isEmpty());
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNonEmptyMap_WhenAssigningToOther_ThenAllElementsAreCopied,
+                              K,
+                              TestedKeyTypes)
+{
+  Map<K> map = { { 753, "Rome" }, { 1789, "Paris" } };
+  Map<K> other = { { 42, "Alice" }, { 27, "Bob" } };
+
+  other = map;
+  map[1410] = "Grunwald";
+
+  thenMapContainsItems(other, { { 753, "Rome" }, { 1789, "Paris" } });
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEmptyMap_WhenSelfAssigning_ThenNothingHappens,
+                              K,
+                              TestedKeyTypes)
+{
+  Map<K> map;
+
+  map = map;
+
+  BOOST_CHECK(map.isEmpty());
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNotEmptyMap_WhenSelfAssigning_ThenNothingHappens,
+                              K,
+                              TestedKeyTypes)
+{
+  Map<K> map = { { 42, "Alice" }, { 27, "Bob" } };
+
+  map = map;
+
+  thenMapContainsItems(map, { { 42, "Alice" }, { 27, "Bob" } });
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEmptyMap_WhenMoveAssigning_ThenBothMapsAreEmpty,
+                              K,
+                              TestedKeyTypes)
+{
+  Map<K> map;
+  Map<K> other = { { 42, "Alice" }, { 27, "Bob" } };
+
+  other = std::move(map);
+
+  BOOST_CHECK(other.isEmpty());
+  BOOST_CHECK(map.isEmpty());
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNonEmptyMap_WhenMoveAssigning_ThenAllElementsAreMoved,
+                              K,
+                              TestedKeyTypes)
+{
+  Map<K> map = { { 753, "Rome" }, { 1789, "Paris" } };
+  Map<K> other = { { 42, "Alice" }, { 27, "Bob" } };
+
+  other = std::move(map);
+
+  thenMapContainsItems(other, { { 753, "Rome" }, { 1789, "Paris" } });
+  BOOST_CHECK(map.isEmpty());
+}
+
 //BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEmptyMap_WhenReadingValueOfAnyKey_ThenExceptionIsThrown,
 //                              K,
 //                              TestedKeyTypes)

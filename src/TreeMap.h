@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <initializer_list>
 #include <stdexcept>
+#include <iostream>
 #include <utility>
 
 namespace aisdi
@@ -35,18 +36,10 @@ public:
     TreeMap(): sentinel(new node), root(sentinel)
     {}
 
-    TreeMap(std::initializer_list<value_type> list)
+    TreeMap(std::initializer_list<value_type> list): TreeMap()
     {
         for(value_type val : list)
-            getNode(val.first) = val.second;
-    }
-
-    void copy_tree(node* nd, node* sentinel)
-    {
-        if(nd == nullptr || nd == sentinel) return;
-        getNode(nd->val.first) = nd->val.second;
-        copy_tree(nd->left, sentinel);
-        copy_tree(nd->right, sentinel);
+            (*this)[val.first] = val.second;
     }
 
     TreeMap(const TreeMap& other): TreeMap()
@@ -55,64 +48,119 @@ public:
         else copy_tree(other.root, other.sentinel);
     }
 
-    TreeMap(TreeMap&& other)
+    TreeMap(TreeMap&& other): TreeMap()
     {
-        (void)other;
-        throw std::runtime_error("TODO");
+        move_tree(other);
+    }
+
+    ~TreeMap()
+    {
+        empty_tree(root);
+        root = nullptr;
+        sentinel->parent = nullptr;
+        delete sentinel;
+        sentinel = nullptr;
     }
 
     TreeMap& operator=(const TreeMap& other)
     {
-        (void)other;
-        throw std::runtime_error("TODO");
+        if(&other != this)
+        {
+            empty_tree(root);
+            sentinel->parent = nullptr;
+            root = sentinel;
+            copy_tree(other.root, other.sentinel);
+        }
+        return *this;
     }
 
     TreeMap& operator=(TreeMap&& other)
     {
-        (void)other;
-        throw std::runtime_error("TODO");
+        if(&other != this)
+        {
+            empty_tree(root);
+            sentinel->parent = nullptr;
+            move_tree(other);
+        }
+        return *this;
+    }
+
+    //Delete all nodes from the given subtree except the sentinel
+    void empty_tree(node* nd)
+    {
+        if(nd == nullptr || nd == sentinel) return;
+        empty_tree(nd->left);
+        empty_tree(nd->right);
+        nd->parent = nd->right = nd->left = nullptr;
+        delete nd;
+    }
+
+    //Copy all nodes from the given subtree except the sentinel
+    void copy_tree(node* nd, node* sentinel)
+    {
+        if(nd == nullptr || nd == sentinel) return;
+        (*this)[nd->val.first] = nd->val.second;
+        copy_tree(nd->left, sentinel);
+        copy_tree(nd->right, sentinel);
+    }
+
+    //Move tree nodes from *other* to *this* tree
+    void move_tree(TreeMap &other)
+    {
+        //Remember the position of newly created sentinel node
+        node* temp = sentinel;
+
+        //Copy other's pointers
+        root = other.root;
+        sentinel = other.sentinel;
+
+        //Make *other* an empty tree with one sentinel node
+        other.root = other.sentinel = temp;
     }
 
     bool isEmpty() const
     {
-        return root == sentinel;
+        return (root == sentinel);
     }
 
-    node* insert(node *&nd, const key_type &key, node *parent, node *&inserted)
+    //Return a node with the given key or create a new one
+    node* getNode(node *&nd, const key_type &key, node *parent, node *&requested)
     {
+        //Node with given key doesn't exist, create it
         if(nd == nullptr)
         {
             nd = new node(key, parent);
-            inserted = nd;
+            requested = nd;
         }
+        /*Currently visited node is the sentinel, so the node we are looking
+          for doesn't exist -> create it and insert before sentinel*/
         else if(nd == sentinel)
         {
             nd = new node(key, parent);
             nd->right = sentinel;
             sentinel->parent = nd;
-            inserted = nd;
+            requested = nd;
         }
+        //Requested node has smaller key than currently visited one
         else if(key < nd->val.first)
-            nd->left = insert(nd->left, key, nd, inserted);
+            nd->left = getNode(nd->left, key, nd, requested);
+        //Requested node has greater key than currently visited one
         else if(key > nd->val.first)
-            nd->right = insert(nd->right, key, nd, inserted);
-        else inserted = nd;
-        return nd;
-    }
+            nd->right = getNode(nd->right, key, nd, requested);
+        //Currently visited node has the right key
+        else requested = nd;
 
-    mapped_type& getNode(const key_type &key)
-    {
-        bool wasEmpty = false;
-        node *temp;
-        if(isEmpty()) wasEmpty = true;
-        insert(root, key, nullptr, temp);
-        if(wasEmpty) root = temp;
-        return temp->val.second;
+        return nd;
     }
 
     mapped_type& operator[](const key_type &key)
     {
-        return getNode(key);
+        bool wasEmpty = false;
+        node *temp;
+        if(isEmpty()) wasEmpty = true;
+        getNode(root, key, nullptr, temp);
+        if(wasEmpty) root = temp;
+        return temp->val.second;
     }
 
     const mapped_type& valueOf(const key_type& key) const

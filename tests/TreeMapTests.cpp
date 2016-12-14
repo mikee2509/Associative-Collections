@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <string>
 #include <map>
+#include <iostream>
 
 #include <boost/test/unit_test.hpp>
 #include <boost/mpl/list.hpp>
@@ -341,255 +342,326 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEmptyMap_WhenMovingToOther_ThenBothMapsAreEmp
                               K,
                               TestedKeyTypes)
 {
-  Map<K> map;
-  Map<K> other{std::move(map)};
+    Map<K> map;
+    Map<K> other{std::move(map)};
 
-  BOOST_CHECK(map.isEmpty());
-  BOOST_CHECK(other.isEmpty());
+    BOOST_CHECK(map.isEmpty());
+    BOOST_CHECK(other.isEmpty());
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNonEmptyMap_WhenMovingToOther_ThenAllItemsAreMoved,
                               K,
                               TestedKeyTypes)
 {
-  Map<K> map = { { 753, "Rome" }, { 1789, "Paris" } };
-  const Map<K> other{std::move(map)};
+    Map<K> map = { { 753, "Rome" }, { 1789, "Paris" } };
+    const Map<K> other{std::move(map)};
 
-  thenMapContainsItems(other, { { 753, "Rome" }, { 1789, "Paris" } });
-  BOOST_CHECK(map.isEmpty());
+    thenMapContainsItems(other, { { 753, "Rome" }, { 1789, "Paris" } });
+    BOOST_CHECK(map.isEmpty());
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEmptyMap_WhenAssigningToOther_ThenOtherMapIsEmpty,
                               K,
                               TestedKeyTypes)
 {
-  const Map<K> map;
-  Map<K> other = { { 42, "Alice" }, { 27, "Bob" } };
+    const Map<K> map;
+    Map<K> other = { { 42, "Alice" }, { 27, "Bob" } };
 
-  other = map;
+    other = map;
 
-  BOOST_CHECK(other.isEmpty());
+    BOOST_CHECK(other.isEmpty());
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNonEmptyMap_WhenAssigningToOther_ThenAllElementsAreCopied,
                               K,
                               TestedKeyTypes)
 {
-  Map<K> map = { { 753, "Rome" }, { 1789, "Paris" } };
-  Map<K> other = { { 42, "Alice" }, { 27, "Bob" } };
+    Map<K> map = { { 753, "Rome" }, { 1789, "Paris" } };
+    Map<K> other = { { 42, "Alice" }, { 27, "Bob" } };
 
-  other = map;
-  map[1410] = "Grunwald";
+    other = map;
+    map[1410] = "Grunwald";
 
-  thenMapContainsItems(other, { { 753, "Rome" }, { 1789, "Paris" } });
+    thenMapContainsItems(other, { { 753, "Rome" }, { 1789, "Paris" } });
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEmptyMap_WhenSelfAssigning_ThenNothingHappens,
                               K,
                               TestedKeyTypes)
 {
-  Map<K> map;
+    Map<K> map;
 
-  map = map;
+    map = map;
 
-  BOOST_CHECK(map.isEmpty());
+    BOOST_CHECK(map.isEmpty());
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNotEmptyMap_WhenSelfAssigning_ThenNothingHappens,
                               K,
                               TestedKeyTypes)
 {
-  Map<K> map = { { 42, "Alice" }, { 27, "Bob" } };
+    Map<K> map = { { 42, "Alice" }, { 27, "Bob" } };
 
-  map = map;
+    map = map;
 
-  thenMapContainsItems(map, { { 42, "Alice" }, { 27, "Bob" } });
+    thenMapContainsItems(map, { { 42, "Alice" }, { 27, "Bob" } });
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEmptyMap_WhenMoveAssigning_ThenBothMapsAreEmpty,
                               K,
                               TestedKeyTypes)
 {
-  Map<K> map;
-  Map<K> other = { { 42, "Alice" }, { 27, "Bob" } };
+    Map<K> map;
+    Map<K> other = { { 42, "Alice" }, { 27, "Bob" } };
 
-  other = std::move(map);
+    other = std::move(map);
 
-  BOOST_CHECK(other.isEmpty());
-  BOOST_CHECK(map.isEmpty());
+    BOOST_CHECK(other.isEmpty());
+    BOOST_CHECK(map.isEmpty());
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNonEmptyMap_WhenMoveAssigning_ThenAllElementsAreMoved,
                               K,
                               TestedKeyTypes)
 {
-  Map<K> map = { { 753, "Rome" }, { 1789, "Paris" } };
-  Map<K> other = { { 42, "Alice" }, { 27, "Bob" } };
+    Map<K> map = { { 753, "Rome" }, { 1789, "Paris" } };
+    Map<K> other = { { 42, "Alice" }, { 27, "Bob" } };
 
-  other = std::move(map);
+    other = std::move(map);
 
-  thenMapContainsItems(other, { { 753, "Rome" }, { 1789, "Paris" } });
-  BOOST_CHECK(map.isEmpty());
+    thenMapContainsItems(other, { { 753, "Rome" }, { 1789, "Paris" } });
+    BOOST_CHECK(map.isEmpty());
 }
 
-//BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEmptyMap_WhenReadingValueOfAnyKey_ThenExceptionIsThrown,
-//                              K,
-//                              TestedKeyTypes)
-//{
-//  const Map<K> map;
-//
-//  BOOST_CHECK_THROW(map.valueOf(1), std::out_of_range);
-//}
-//
-//BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNotEmptyMap_WhenReadingValueOfMissingKey_ThenExceptionIsThrown,
-//                              K,
-//                              TestedKeyTypes)
-//{
-//  const Map<K> map = { { 42, "Alice" }, { 27, "Bob" } };
-//
-//  BOOST_CHECK_THROW(map.valueOf(1), std::out_of_range);
-//}
-//
-//BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNotEmptyMap_WhenReadingValueOfAKey_ThenValueIsReturned,
-//                              K,
-//                              TestedKeyTypes)
-//{
-//  const Map<K> map = { { 42, "Alice" }, { 27, "Bob" } };
-//
-//  BOOST_CHECK_EQUAL(map.valueOf(42), "Alice");
-//}
-//
-//BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNotEmptyMap_WhenChangingValueOfAKey_ThenValueIsChanged,
-//                              K,
-//                              TestedKeyTypes)
-//{
-//  Map<K> map = { { 42, "Alice" }, { 27, "Bob" } };
-//
-//  map.valueOf(42) = "Chuck";
-//
-//  thenMapContainsItems(map, { { 42, "Chuck" }, { 27, "Bob" } });
-//}
-//
-//BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEmptyMap_WhenRemovingValueByKey_ThenExceptionIsThrown,
-//                              K,
-//                              TestedKeyTypes)
-//{
-//  Map<K> map;
-//
-//  BOOST_CHECK_THROW(map.remove(1), std::out_of_range);
-//}
-//
-//BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNotEmptyMap_WhenRemovingValueByWrongKey_ThenExceptionIsThrown,
-//                              K,
-//                              TestedKeyTypes)
-//{
-//  Map<K> map = { { 42, "Alice" }, { 27, "Bob" } };
-//
-//  BOOST_CHECK_THROW(map.remove(1), std::out_of_range);
-//}
-//
-//BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNotEmptyMap_WhenRemovingValueByKey_ThenItemIsRemoved,
-//                              K,
-//                              TestedKeyTypes)
-//{
-//  Map<K> map = { { 42, "Alice" }, { 27, "Bob" } };
-//
-//  map.remove(27);
-//
-//  thenMapContainsItems(map, { { 42, "Alice" } });
-//}
-//
-//BOOST_AUTO_TEST_CASE_TEMPLATE(GivenSingleItemMap_WhenRemovingValueByKey_ThenMapBecomesEmpty,
-//                              K,
-//                              TestedKeyTypes)
-//{
-//  Map<K> map = { { 27, "Bob" } };
-//
-//  map.remove(27);
-//
-//  BOOST_CHECK(map.isEmpty());
-//}
-//
-//BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNotEmptyMap_WhenErasingEnd_ThenExceptionIsThrown,
-//                              K,
-//                              TestedKeyTypes)
-//{
-//  Map<K> map = { { 42, "Alice" }, { 27, "Bob" } };
-//
-//  BOOST_CHECK_THROW(map.remove(end(map)), std::out_of_range);
-//}
-//
-//BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNotEmptyMap_WhenRemovingItemByIterator_ThenItemIsRemoved,
-//                              K,
-//                              TestedKeyTypes)
-//{
-//  Map<K> map = { { 42, "Alice" }, { 27, "Bob" } };
-//
-//  map.remove(map.find(42));
-//
-//  thenMapContainsItems(map, { { 27, "Bob" } });
-//}
-//
-//BOOST_AUTO_TEST_CASE_TEMPLATE(GivenSingleItemMap_WhenRemovingItemByIterator_ThenMapBecomesEmpty,
-//                              K,
-//                              TestedKeyTypes)
-//{
-//  Map<K> map = { { 42, "Alice" } };
-//
-//  map.remove(map.find(42));
-//
-//  BOOST_CHECK(map.isEmpty());
-//}
-//
-//BOOST_AUTO_TEST_CASE_TEMPLATE(GivenTwoEmptyMaps_WhenComparingThem_ThenTheyAreReportedAsEqual,
-//                              K,
-//                              TestedKeyTypes)
-//{
-//  const Map<K> map;
-//  const Map<K> other;
-//
-//  BOOST_CHECK(map == other);
-//}
-//
-//BOOST_AUTO_TEST_CASE_TEMPLATE(GivenTwoEqualMaps_WhenComparingThem_ThenTheyAreReportedAsEqual,
-//                              K,
-//                              TestedKeyTypes)
-//{
-//  const Map<K> map = { { 42, "Alice" }, { 27, "Bob" } };
-//  const Map<K> other = { { 42, "Alice" }, { 27, "Bob" } };
-//
-//  BOOST_CHECK(map == other);
-//}
-//
-//BOOST_AUTO_TEST_CASE_TEMPLATE(GivenTwoEquivalentMaps_WhenComparingThem_ThenTheyAreReportedAsEqual,
-//                              K,
-//                              TestedKeyTypes)
-//{
-//  const Map<K> map = { { 42, "Alice" }, { 27, "Bob" } };
-//  const Map<K> other = { { 27, "Bob" }, { 42, "Alice" } };
-//
-//  BOOST_CHECK(map == other);
-//}
-//
-//BOOST_AUTO_TEST_CASE_TEMPLATE(GivenTwoMapsWithDifferentValues_WhenComparingThem_ThenTheyAreNotEqual,
-//                              K,
-//                              TestedKeyTypes)
-//{
-//  const Map<K> map = { { 42, "Alice" }, { 27, "Bob" } };
-//  const Map<K> other = { { 27, "Alice" }, { 42, "Bob" } };
-//
-//  BOOST_CHECK(map != other);
-//}
-//
-//BOOST_AUTO_TEST_CASE_TEMPLATE(GivenTwoMapsWithDifferentKeys_WhenComparingThem_ThenTheyAreNotEqual,
-//                              K,
-//                              TestedKeyTypes)
-//{
-//  const Map<K> map = { { 42, "Alice" }, { 27, "Bob" }, { 13, "Chuck" } };
-//  const Map<K> other = { { 27, "Alice" }, { 42, "Bob" } };
-//
-//  BOOST_CHECK(map != other);
-//}
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEmptyMap_WhenReadingValueOfAnyKey_ThenExceptionIsThrown,
+                              K,
+                              TestedKeyTypes)
+{
+    const Map<K> map;
+
+    BOOST_CHECK_THROW(map.valueOf(1), std::out_of_range);
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNotEmptyMap_WhenReadingValueOfMissingKey_ThenExceptionIsThrown,
+                              K,
+                              TestedKeyTypes)
+{
+    const Map<K> map = { { 42, "Alice" }, { 27, "Bob" } };
+
+    BOOST_CHECK_THROW(map.valueOf(1), std::out_of_range);
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNotEmptyMap_WhenReadingValueOfAKey_ThenValueIsReturned,
+                              K,
+                              TestedKeyTypes)
+{
+    const Map<K> map = { { 42, "Alice" }, { 27, "Bob" } };
+
+    BOOST_CHECK_EQUAL(map.valueOf(42), "Alice");
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNotEmptyMap_WhenChangingValueOfAKey_ThenValueIsChanged,
+                              K,
+                              TestedKeyTypes)
+{
+    Map<K> map = { { 42, "Alice" }, { 27, "Bob" } };
+
+    map.valueOf(42) = "Chuck";
+
+    thenMapContainsItems(map, { { 42, "Chuck" }, { 27, "Bob" } });
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEmptyMap_WhenRemovingValueByKey_ThenExceptionIsThrown,
+                              K,
+                              TestedKeyTypes)
+{
+    Map<K> map;
+
+    BOOST_CHECK_THROW(map.remove(1), std::out_of_range);
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNotEmptyMap_WhenRemovingValueByWrongKey_ThenExceptionIsThrown,
+                              K,
+                              TestedKeyTypes)
+{
+    Map<K> map = { { 42, "Alice" }, { 27, "Bob" } };
+
+    BOOST_CHECK_THROW(map.remove(1), std::out_of_range);
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNotEmptyMap_WhenRemovingValueByKey_ThenItemIsRemoved,
+                              K,
+                              TestedKeyTypes)
+{
+    Map<K> map = { { 42, "Alice" }, { 27, "Bob" } };
+
+    map.remove(27);
+
+    thenMapContainsItems(map, { { 42, "Alice" } });
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenSingleItemMap_WhenRemovingValueByKey_ThenMapBecomesEmpty,
+                              K,
+                              TestedKeyTypes)
+{
+    Map<K> map = { { 27, "Bob" } };
+
+    map.remove(27);
+
+    BOOST_CHECK(map.isEmpty());
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNotEmptyMap_WhenErasingEnd_ThenExceptionIsThrown,
+                              K,
+                              TestedKeyTypes)
+{
+    Map<K> map = { { 42, "Alice" }, { 27, "Bob" } };
+
+    BOOST_CHECK_THROW(map.remove(end(map)), std::out_of_range);
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNotEmptyMap_WhenRemovingItemByIterator_ThenItemIsRemoved,
+                              K,
+                              TestedKeyTypes)
+{
+    Map<K> map = { { 42, "Alice" }, { 27, "Bob" } };
+
+    map.remove(map.find(42));
+
+    thenMapContainsItems(map, { { 27, "Bob" } });
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenSingleItemMap_WhenRemovingItemByIterator_ThenMapBecomesEmpty,
+                              K,
+                              TestedKeyTypes)
+{
+    Map<K> map = { { 42, "Alice" } };
+
+    map.remove(map.find(42));
+
+    BOOST_CHECK(map.isEmpty());
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenTwoEmptyMaps_WhenComparingThem_ThenTheyAreReportedAsEqual,
+                              K,
+                              TestedKeyTypes)
+{
+    const Map<K> map;
+    const Map<K> other;
+
+    BOOST_CHECK(map == other);
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenTwoEqualMaps_WhenComparingThem_ThenTheyAreReportedAsEqual,
+                              K,
+                              TestedKeyTypes)
+{
+    const Map<K> map = { { 42, "Alice" }, { 27, "Bob" } };
+    const Map<K> other = { { 42, "Alice" }, { 27, "Bob" } };
+
+    BOOST_CHECK(map == other);
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenTwoEquivalentMaps_WhenComparingThem_ThenTheyAreReportedAsEqual,
+                              K,
+                              TestedKeyTypes)
+{
+    const Map<K> map = { { 42, "Alice" }, { 27, "Bob" } };
+    const Map<K> other = { { 27, "Bob" }, { 42, "Alice" } };
+
+    BOOST_CHECK(map == other);
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenTwoMapsWithDifferentValues_WhenComparingThem_ThenTheyAreNotEqual,
+                              K,
+                              TestedKeyTypes)
+{
+    const Map<K> map = { { 42, "Alice" }, { 27, "Bob" } };
+    const Map<K> other = { { 27, "Alice" }, { 42, "Bob" } };
+
+    BOOST_CHECK(map != other);
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenTwoMapsWithDifferentKeys_WhenComparingThem_ThenTheyAreNotEqual,
+                              K,
+                              TestedKeyTypes)
+{
+    const Map<K> map = { { 42, "Alice" }, { 27, "Bob" }, { 13, "Chuck" } };
+    const Map<K> other = { { 27, "Alice" }, { 42, "Bob" } };
+
+    BOOST_CHECK(map != other);
+}
+
+
+///My added tests//////////////////////////////////////////////////////////////////////////////////////////////
+
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(Remove_MegaTest, K, TestedKeyTypes)
+{
+    //std::cout << "MY TESTS: \n";
+    Map<K> map = { { 42, "Alice" }, { 27, "Bob" } };
+    map.remove(27);
+    thenMapContainsItems(map, { { 42, "Alice" } });
+
+    map.remove(42);
+    BOOST_CHECK(map.isEmpty());
+
+    map[10] = "Mike";
+    map[20] = "John";
+    thenMapContainsItems(map, { { 10, "Mike" }, { 20, "John" } });
+
+    map.remove(20);
+    thenMapContainsItems(map, { { 10, "Mike" } });
+
+
+    map[8] = "Kate";
+    map[9] = "Monica";
+    map[6] = "Julia";
+    map[4] = "Robert";
+    thenMapContainsItems(map, { { 10, "Mike" }, { 8, "Kate" }, { 9, "Monica" }, { 6, "Julia" }, { 4, "Robert" } });
+
+    map.remove(6);
+    thenMapContainsItems(map, { { 10, "Mike" }, { 8, "Kate" }, { 9, "Monica" }, { 4, "Robert" } });
+
+    map.remove(10);
+    thenMapContainsItems(map, { { 8, "Kate" }, { 9, "Monica" }, { 4, "Robert" } });
+
+    auto it = map.find(8);
+    ++it;
+    ++it;
+    BOOST_CHECK(it == map.end());
+
+
+    map[50] = "Jake";
+    map[40] = "Chris";
+    map[60] = "Jeremy";
+    map[57] = "Tris";
+    map[52] = "Melanie";
+    map[54] = "Marta";
+    map[53] = "Jennie";
+    map[55] = "Katherine";
+    thenMapContainsItems(map, { { 8, "Kate" }, { 9, "Monica" }, { 4, "Robert" }, { 50, "Jake" }, { 40, "Chris" },
+         { 60, "Jeremy" }, { 57, "Tris" }, { 52, "Melanie" }, { 54, "Marta" }, { 53, "Jennie" }, { 55, "Katherine" } });
+
+
+    map.remove(50);
+    thenMapContainsItems(map, { { 8, "Kate" }, { 9, "Monica" }, { 4, "Robert" }, { 40, "Chris" },
+         { 60, "Jeremy" }, { 57, "Tris" }, { 52, "Melanie" }, { 54, "Marta" }, { 53, "Jennie" }, { 55, "Katherine" } });
+
+
+    map[6] = "Jimmy";
+    thenMapContainsItems(map, { { 6, "Jimmy" }, { 8, "Kate" }, { 9, "Monica" }, { 4, "Robert" }, { 40, "Chris" },
+         { 60, "Jeremy" }, { 57, "Tris" }, { 52, "Melanie" }, { 54, "Marta" }, { 53, "Jennie" }, { 55, "Katherine" } });
+
+    map.remove(8);
+    thenMapContainsItems(map, { { 6, "Jimmy" }, { 9, "Monica" }, { 4, "Robert" }, { 40, "Chris" },
+         { 60, "Jeremy" }, { 57, "Tris" }, { 52, "Melanie" }, { 54, "Marta" }, { 53, "Jennie" }, { 55, "Katherine" } });
+
+    BOOST_CHECK(map.getSize() == 10);
+//    for(auto it = map.begin(); it != map.end(); ++it)
+//        std::cout << (*it).first << "  ";
+//    std::cout << std::endl;
+}
 
 // ConstIterator is tested via Iterator methods.
 // If Iterator methods are to be changed, then new ConstIterator tests are required.

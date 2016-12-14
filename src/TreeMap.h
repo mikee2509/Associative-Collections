@@ -31,6 +31,7 @@ public:
 
 private:
     node *sentinel, *root;
+    bool inOrderSuccessorRecentlyUsed = false; //variable used for choosing different variants of remove function
 
 public:
     TreeMap(): sentinel(new node), root(sentinel)
@@ -165,14 +166,16 @@ public:
 
     const mapped_type& valueOf(const key_type& key) const
     {
-        (void)key;
-        throw std::runtime_error("TODO");
+        node* temp = search(root, key);
+        if(temp == nullptr) throw std::out_of_range("Node with given key doesn't exist");
+        return temp->val.second;
     }
 
     mapped_type& valueOf(const key_type& key)
     {
-        (void)key;
-        throw std::runtime_error("TODO");
+        node* temp = search(root, key);
+        if(temp == nullptr) throw std::out_of_range("Node with given key doesn't exist");
+        return temp->val.second;
     }
 
     node* search(node *root, const key_type& key) const
@@ -202,14 +205,116 @@ public:
 
     void remove(const key_type& key)
     {
-        (void)key;
-        throw std::runtime_error("TODO");
+        const_iterator it = find(key);
+        remove(it);
     }
 
     void remove(const const_iterator& it)
     {
-        (void)it;
-        throw std::runtime_error("TODO");
+        if(it == end()) throw std::out_of_range("Node with given key doesn't exist or iterator is in end position");
+        node* temp = it.getNode();
+        bool isNotRoot = (temp != root);
+        bool isRightChild = isNotRoot ? (temp->parent->right == temp) : false;
+        if(temp->left == nullptr)
+        {
+            if(temp->right == nullptr) //no children (*temp* can't be root)
+            {
+                //std::cout << "1. no children (*temp* can't be root)" << std::endl;
+                if(isRightChild) temp->parent->right = nullptr;
+                else temp->parent->left = nullptr;
+                temp->left = temp->right = temp->parent = nullptr; ///...
+                delete temp;
+            }
+            else //one child on the right (can be sentinel node)
+            {
+                //std::cout << "2. one child on the right (can be sentinel node)" << std::endl;
+                if(isNotRoot)
+                {
+                    //std::cout << "2.1 ...isNotRoot" << std::endl;
+                    if(isRightChild) temp->parent->right = temp->right;
+                    else temp->parent->left = temp->right;
+                }
+                else root = temp->right;
+
+                temp->right->parent = temp->parent; //this line is ok even if *temp* is root,
+                                                    //because temp->parent is nullptr in that case
+                temp->left = temp->right = temp->parent = nullptr; ///...
+                delete temp;
+            }
+        }
+        else //(temp->left != nullptr)
+        {
+            if(temp->right == nullptr) //one child on the left (*temp* can't be root)
+            {
+                //std::cout << "3. one child on the left (*temp* can't be root)" << std::endl;
+                temp->left->parent = temp->parent;
+                if(isRightChild) temp->parent->right = temp->left;
+                else temp->parent->left = temp->left;
+                temp->left = temp->right = temp->parent = nullptr;
+                delete temp;
+            }
+            else if(temp->right == sentinel) //two children, sentinel on the right (*temp* is root)
+            {
+                //std::cout << "4. two children, sentinel on the right (*temp* is root)" << std::endl;
+                node* nd = temp->left;
+                while(nd->right != nullptr)
+                    nd = nd->right;
+                nd->right = sentinel;
+                sentinel->parent = nd;
+
+                temp->left->parent = nullptr;
+                root = temp->left;
+
+                temp->left = temp->right = temp->parent = nullptr;
+                delete temp;
+            }
+            else //two children (*temp* can't be root)
+            {
+                node* nd;
+                if(inOrderSuccessorRecentlyUsed) //use in-order predecessor this time
+                {
+                    //std::cout << "5. use in-order predecessor this time" << std::endl;
+                    nd = temp->left;
+                    while(nd->right != nullptr)
+                        nd = nd->right;
+
+                    nd->parent->right = nd->left;
+                    if(nd->left != nullptr)
+                        nd->left->parent = nd->parent;
+
+                    inOrderSuccessorRecentlyUsed = false;
+                }
+                else //use in-order successor
+                {
+                    //std::cout << "6. use in-order successor" << std::endl;
+                    nd = temp->right;
+                    while(nd->left != nullptr)
+                        nd = nd->left;
+
+                    nd->parent->left = nd->right;
+                    if(nd->right != nullptr)
+                        nd->right->parent = nd->parent;
+
+                    inOrderSuccessorRecentlyUsed = true;
+                }
+
+                nd->left = temp->left;
+                if(temp->left != nullptr)
+                    temp->left->parent = nd;
+                nd->right = temp->right;
+                if(temp->right != nullptr)
+                    temp->right->parent = nd;
+                nd->parent = temp->parent;
+                if(isNotRoot)
+                {
+                    if(isRightChild) temp->parent->right = nd;
+                    else temp->parent->left = nd;
+                }
+                else root = nd;
+                temp->left = temp->right = temp->parent = nullptr;
+                delete temp;
+            }
+        }
     }
 
     void size(node* nd, size_type &s) const
@@ -229,8 +334,11 @@ public:
 
     bool operator==(const TreeMap& other) const
     {
-        (void)other;
-        throw std::runtime_error("TODO==map");
+        if(getSize() != other.getSize()) return false;
+
+        for(auto it1 = begin(), it2 = other.begin(); it1 != end(); ++it1, ++it2)
+            if(*it1 != *it2) return false;
+        return true;
     }
 
     bool operator!=(const TreeMap& other) const
@@ -296,8 +404,6 @@ public:
     Node(value_type v, Node *p): parent(p), left(nullptr), right(nullptr), val(v)
     {}
 
-//    Node(const Node &other): parent(other.parent), left(other.left), right(other.right)
-//    {}
 };
 
 
@@ -305,6 +411,7 @@ template <typename KeyType, typename ValueType>
 class TreeMap<KeyType, ValueType>::ConstIterator
 {
 public:
+    friend class TreeMap<KeyType, ValueType>;
     using reference = typename TreeMap::const_reference;
     using iterator_category = std::bidirectional_iterator_tag;
     using value_type = typename TreeMap::value_type;
@@ -417,12 +524,19 @@ public:
     {
         return !(*this == other);
     }
+
+private:
+    node* getNode() const
+    {
+        return current;
+    }
 };
 
 template <typename KeyType, typename ValueType>
 class TreeMap<KeyType, ValueType>::Iterator : public TreeMap<KeyType, ValueType>::ConstIterator
 {
 public:
+    friend class TreeMap<KeyType, ValueType>;
     using reference = typename TreeMap::reference;
     using pointer = typename TreeMap::value_type*;
 

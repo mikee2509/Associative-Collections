@@ -38,99 +38,99 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(GivenMap_WhenCreatedWithDefaultConstructor_ThenItI
                               K,
                               TestedKeyTypes)
 {
-  //const Map<K> map;
+    const Map<K> map;
 
-  //BOOST_CHECK(map.isEmpty());
+    BOOST_CHECK(map.isEmpty());
 }
 
-//BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEmptyMap_WhenAddingItem_ThenItIsNoLongerEmpty,
-//                              K,
-//                              TestedKeyTypes)
-//{
-//  Map<K> map;
-//
-//  map[K{}] = std::string{};
-//
-//  BOOST_CHECK(!map.isEmpty());
-//}
-//
-//BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEmptyMap_WhenGettingIterators_ThenBeginEqualsEnd,
-//                              K,
-//                              TestedKeyTypes)
-//{
-//  Map<K> map;
-//
-//  BOOST_CHECK(begin(map) == end(map));
-//  BOOST_CHECK(const_cast<const Map<K>&>(map).begin() == map.end());
-//  BOOST_CHECK(map.cbegin() == map.cend());
-//}
-//
-//BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNonEmptyMap_WhenGettingIterator_ThenBeginIsNotEnd,
-//                              K,
-//                              TestedKeyTypes)
-//{
-//  Map<K> map;
-//  map[K{}] = std::string{};
-//
-//  BOOST_CHECK(begin(map) != end(map));
-//}
-//
-//BOOST_AUTO_TEST_CASE_TEMPLATE(GivenMapWithOnePair_WhenIterating_ThenPairIsReturned,
-//                              K,
-//                              TestedKeyTypes)
-//{
-//  Map<K> map;
-//  map[753] = "Rome";
-//
-//  auto it = map.begin();
-//
-//  BOOST_CHECK_EQUAL(it->first, 753);
-//  BOOST_CHECK_EQUAL(it->second, "Rome");
-//  BOOST_CHECK(++it == map.end());
-//}
-//
-//BOOST_AUTO_TEST_CASE_TEMPLATE(GivenIterator_WhenPostIncrementing_ThenPreviousPositionIsReturned,
-//                              K,
-//                              TestedKeyTypes)
-//{
-//  Map<K> map;
-//  map[K{}] = std::string{};
-//
-//  auto it = map.begin();
-//  auto postIncrementedIt = it++;
-//
-//  BOOST_CHECK(postIncrementedIt == map.begin());
-//  BOOST_CHECK(it == map.end());
-//  BOOST_CHECK(postIncrementedIt == map.cbegin());
-//  BOOST_CHECK(it == map.cend());
-//}
-//
-//BOOST_AUTO_TEST_CASE_TEMPLATE(GivenIterator_WhenPreIncrementing_ThenNewPositionIsReturned,
-//                              K,
-//                              TestedKeyTypes)
-//{
-//  Map<K> map;
-//  map[K{}] = std::string{};
-//
-//  auto it = map.begin();
-//  auto preIncrementedIt = ++it;
-//
-//  BOOST_CHECK(preIncrementedIt == it);
-//  BOOST_CHECK(it == map.end());
-//}
-//
-//BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEndIterator_WhenIncrementing_ThenOperationThrows,
-//                              K,
-//                              TestedKeyTypes)
-//{
-//  Map<K> map;
-//
-//  BOOST_CHECK_THROW(map.end()++, std::out_of_range);
-//  BOOST_CHECK_THROW(++(map.end()), std::out_of_range);
-//  BOOST_CHECK_THROW(map.cend()++, std::out_of_range);
-//  BOOST_CHECK_THROW(++(map.cend()), std::out_of_range);
-//}
-//
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEmptyMap_WhenAddingItem_ThenItIsNoLongerEmpty,
+                              K,
+                              TestedKeyTypes)
+{
+    Map<K> map;
+
+    map[K{}] = std::string{};
+
+    BOOST_CHECK(!map.isEmpty());
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEmptyMap_WhenGettingIterators_ThenBeginEqualsEnd,
+                              K,
+                              TestedKeyTypes)
+{
+    Map<K> map;
+
+    BOOST_CHECK(begin(map) == end(map));
+    BOOST_CHECK(const_cast<const Map<K>&>(map).begin() == map.end());
+    BOOST_CHECK(map.cbegin() == map.cend());
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenNonEmptyMap_WhenGettingIterator_ThenBeginIsNotEnd,
+                              K,
+                              TestedKeyTypes)
+{
+    Map<K> map;
+    map[K{}] = std::string{};
+
+    BOOST_CHECK(begin(map) != end(map));
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenMapWithOnePair_WhenIterating_ThenPairIsReturned,
+                              K,
+                              TestedKeyTypes)
+{
+    Map<K> map;
+    map[753] = "Rome";
+
+    auto it = map.begin();
+
+    BOOST_CHECK_EQUAL(it->first, 753);
+    BOOST_CHECK_EQUAL(it->second, "Rome");
+    BOOST_CHECK(++it == map.end());
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenIterator_WhenPostIncrementing_ThenPreviousPositionIsReturned,
+                              K,
+                              TestedKeyTypes)
+{
+    Map<K> map;
+    map[K{}] = std::string{};
+
+    auto it = map.begin();
+    auto postIncrementedIt = it++;
+
+    BOOST_CHECK(postIncrementedIt == map.begin());
+    BOOST_CHECK(it == map.end());
+    BOOST_CHECK(postIncrementedIt == map.cbegin());
+    BOOST_CHECK(it == map.cend());
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenIterator_WhenPreIncrementing_ThenNewPositionIsReturned,
+                              K,
+                              TestedKeyTypes)
+{
+    Map<K> map;
+    map[K{}] = std::string{};
+
+    auto it = map.begin();
+    auto preIncrementedIt = ++it;
+
+    BOOST_CHECK(preIncrementedIt == it);
+    BOOST_CHECK(it == map.end());
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEndIterator_WhenIncrementing_ThenOperationThrows,
+                              K,
+                              TestedKeyTypes)
+{
+    Map<K> map;
+
+    BOOST_CHECK_THROW(map.end()++, std::out_of_range);
+    BOOST_CHECK_THROW(++(map.end()), std::out_of_range);
+    BOOST_CHECK_THROW(map.cend()++, std::out_of_range);
+    BOOST_CHECK_THROW(++(map.cend()), std::out_of_range);
+}
+
 //BOOST_AUTO_TEST_CASE_TEMPLATE(GivenEndIterator_WhenDecrementing_ThenIteratorPointsToLastItem,
 //                              K,
 //                              TestedKeyTypes)

@@ -4,10 +4,15 @@
 #include <cstddef>
 #include <initializer_list>
 #include <stdexcept>
+#include <functional>
 #include <utility>
+
+#define HASH_SIZE 16000
 
 namespace aisdi
 {
+template <typename KeyType, typename ValueType>
+class Node;
 
 template <typename KeyType, typename ValueType>
 class HashMap
@@ -24,8 +29,13 @@ public:
     class Iterator;
     using iterator = Iterator;
     using const_iterator = ConstIterator;
+    using node = Node<KeyType, ValueType>;
 
-    HashMap()
+private:
+    node* table[HASH_SIZE] = { nullptr };
+    size_type firstIndex, lastIndex; //for faster iteration
+public:
+    HashMap(): firstIndex(HASH_SIZE), lastIndex(HASH_SIZE)
     {}
 
     HashMap(std::initializer_list<value_type> list)
@@ -46,6 +56,22 @@ public:
         throw std::runtime_error("TODO");
     }
 
+//    ~HashMap()
+//    {
+//        node *it, *temp;
+//        for(size_type i=firstIndex; i<=lastIndex; ++i)
+//        {
+//            if(table[i] == nullptr) continue;
+//            it = table[i];
+//            while(it!=nullptr)
+//            {
+//                temp = it;
+//                it = it->next;
+//                delete temp;
+//            }
+//        }
+//    }
+
     HashMap& operator=(const HashMap& other)
     {
         (void)other;
@@ -58,15 +84,52 @@ public:
         throw std::runtime_error("TODO");
     }
 
+    size_type getIndex(const key_type& key)
+    {
+        std::hash<key_type> temp;
+        return temp(key) % HASH_SIZE;
+    }
+
     bool isEmpty() const
     {
-        throw std::runtime_error("TODO");
+        return firstIndex == HASH_SIZE;
+    }
+
+    node* getNode(const size_type &index, const key_type& key)
+    {
+        node* temp = table[index];
+        while(temp != nullptr)
+        {
+           if(temp->val.first == key) break;
+           temp = temp->next;
+        }
+        return temp;
+    }
+
+    void insertNode(const size_type &index, node *&nd)
+    {
+        if(table[index] == nullptr) table[index] = nd;
+        else
+        {
+            node* temp = table[index];
+            while(temp->next != nullptr)
+                temp = temp->next;
+            temp->next = nd;
+        }
     }
 
     mapped_type& operator[](const key_type& key)
     {
-        (void)key;
-        throw std::runtime_error("TODO");
+        size_type index = getIndex(key);
+        node* temp = getNode(index, key);
+
+        if(temp != nullptr) return temp->val.second;
+
+        temp = new node(key);
+        insertNode(index, temp);
+        if(index < firstIndex) firstIndex = index;
+        if(index > lastIndex || lastIndex == HASH_SIZE) lastIndex = index;
+        return temp->val.second;
     }
 
     const mapped_type& valueOf(const key_type& key) const
@@ -123,22 +186,23 @@ public:
 
     iterator begin()
     {
-        throw std::runtime_error("TODO");
+        return iterator(cbegin());
     }
 
     iterator end()
     {
-        throw std::runtime_error("TODO");
+        return iterator(cend());
     }
 
     const_iterator cbegin() const
     {
-        throw std::runtime_error("TODO");
+        if(isEmpty()) return cend();
+        else return const_iterator(this, table[firstIndex], firstIndex);
     }
 
     const_iterator cend() const
     {
-        throw std::runtime_error("TODO");
+        return const_iterator(this, nullptr, HASH_SIZE, true);
     }
 
     const_iterator begin() const
@@ -153,31 +217,98 @@ public:
 };
 
 template <typename KeyType, typename ValueType>
+class Node
+{
+public:
+    friend class HashMap<KeyType, ValueType>;
+    using key_type = KeyType;
+    using mapped_type = ValueType;
+    using value_type = std::pair<const key_type, mapped_type>;
+    using size_type = std::size_t;
+    using node = Node;
+
+private:
+    value_type val;
+    node *next;
+
+public:
+    Node(): next(nullptr)
+    {}
+
+    Node(value_type v, node* n = nullptr) : val(v), next(n)
+    {}
+
+    Node(key_type key, node* n = nullptr): val(value_type(key, mapped_type())), next(n)
+    {}
+
+    ~Node()
+    {
+        next = nullptr;
+    }
+};
+
+template <typename KeyType, typename ValueType>
 class HashMap<KeyType, ValueType>::ConstIterator
 {
 public:
+    friend class HashMap<KeyType, ValueType>;
     using reference = typename HashMap::const_reference;
     using iterator_category = std::bidirectional_iterator_tag;
     using value_type = typename HashMap::value_type;
     using pointer = const typename HashMap::value_type*;
+    using node = Node<KeyType, ValueType>;
+    using hash_map = HashMap<KeyType, ValueType>;
 
-    explicit ConstIterator()
+private:
+    node* current;
+    size_type index;
+    const hash_map* parent_map;
+    bool isInEndPosition;
+
+public:
+    explicit ConstIterator(const hash_map* p, node* n, size_type in, bool is = false): current(n), index(in),
+        parent_map(p), isInEndPosition(is)
     {}
 
-    ConstIterator(const ConstIterator& other)
-    {
-        (void)other;
-        throw std::runtime_error("TODO");
-    }
+    ConstIterator(const ConstIterator& other): current(other.current), index(other.index),
+        parent_map(other.parent_map), isInEndPosition(other.isInEndPosition)
+    {}
 
     ConstIterator& operator++()
     {
-        throw std::runtime_error("TODO");
+        if(isInEndPosition) throw std::out_of_range("Cannot increment iterator");
+        if(current->next != nullptr)
+        {
+            current = current->next;
+            return *this;
+        }
+        node* temp = nullptr;
+        for(size_type i = index+1; i <= parent_map->lastIndex; ++i)
+        {
+            if(parent_map->table[i] == nullptr) continue;
+            temp = parent_map->table[i];
+            index = i;
+            break;
+        }
+        if(temp == nullptr)
+        {
+            current = nullptr;
+            isInEndPosition = true;
+            index = HASH_SIZE; ///TODO: check whether isInEndPosition is redundant
+            return *this;
+        }
+        else
+        {
+            current = temp;
+            return *this;
+        }
     }
 
     ConstIterator operator++(int)
     {
-        throw std::runtime_error("TODO");
+        ConstIterator temp = *this;
+        ++(*this);
+        return temp;
     }
 
     ConstIterator& operator--()
@@ -187,12 +318,15 @@ public:
 
     ConstIterator operator--(int)
     {
-        throw std::runtime_error("TODO");
+        ConstIterator temp = *this;
+        --(*this);
+        return temp;
     }
 
     reference operator*() const
     {
-        throw std::runtime_error("TODO");
+        if(*this == parent_map->end()) throw std::out_of_range("Iterator points at empty space after the last element");
+        return current->val;
     }
 
     pointer operator->() const
@@ -202,8 +336,9 @@ public:
 
     bool operator==(const ConstIterator& other) const
     {
-        (void)other;
-        throw std::runtime_error("TODO");
+        if(parent_map != other.parent_map) return false;
+        //Check if *current* pointers match and if both iterators are or aren't in the end position simultaneously
+        return current == other.current && ~isInEndPosition^other.isInEndPosition;
     }
 
     bool operator!=(const ConstIterator& other) const

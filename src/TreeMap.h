@@ -58,7 +58,6 @@ public:
     {
         empty_tree(root);
         root = nullptr;
-        sentinel->parent = nullptr;
         delete sentinel;
         sentinel = nullptr;
     }
@@ -92,7 +91,6 @@ public:
         if(nd == nullptr || nd == sentinel) return;
         empty_tree(nd->left);
         empty_tree(nd->right);
-        nd->parent = nd->right = nd->left = nullptr;
         delete nd;
     }
 
@@ -222,7 +220,6 @@ public:
                 //std::cout << "1. no children (*temp* can't be root)" << std::endl;
                 if(isRightChild) temp->parent->right = nullptr;
                 else temp->parent->left = nullptr;
-                temp->left = temp->right = temp->parent = nullptr; ///...
                 delete temp;
             }
             else //one child on the right (can be sentinel node)
@@ -238,7 +235,6 @@ public:
 
                 temp->right->parent = temp->parent; //this line is ok even if *temp* is root,
                                                     //because temp->parent is nullptr in that case
-                temp->left = temp->right = temp->parent = nullptr; ///...
                 delete temp;
             }
         }
@@ -250,7 +246,6 @@ public:
                 temp->left->parent = temp->parent;
                 if(isRightChild) temp->parent->right = temp->left;
                 else temp->parent->left = temp->left;
-                temp->left = temp->right = temp->parent = nullptr;
                 delete temp;
             }
             else if(temp->right == sentinel) //two children, sentinel on the right (*temp* is root)
@@ -265,7 +260,6 @@ public:
                 temp->left->parent = nullptr;
                 root = temp->left;
 
-                temp->left = temp->right = temp->parent = nullptr;
                 delete temp;
             }
             else //two children (*temp* can't be root)
@@ -311,7 +305,6 @@ public:
                     else temp->parent->left = nd;
                 }
                 else root = nd;
-                temp->left = temp->right = temp->parent = nullptr;
                 delete temp;
             }
         }
@@ -403,6 +396,11 @@ public:
 
     Node(value_type v, Node *p): parent(p), left(nullptr), right(nullptr), val(v)
     {}
+
+    ~Node()
+    {
+        parent = left = right = nullptr;
+    }
 
 };
 

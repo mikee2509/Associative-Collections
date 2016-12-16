@@ -7,12 +7,8 @@
 #include <functional>
 #include <utility>
 
-#define HASH_SIZE 16000
-
 namespace aisdi
 {
-template <typename KeyType, typename ValueType>
-class Node;
 
 template <typename KeyType, typename ValueType>
 class HashMap
@@ -29,9 +25,11 @@ public:
     class Iterator;
     using iterator = Iterator;
     using const_iterator = ConstIterator;
-    using node = Node<KeyType, ValueType>;
+    class Node;
+    using node = Node;
 
 private:
+    const static size_type HASH_SIZE = 16000;
     node* table[HASH_SIZE] = { nullptr };
     size_type firstIndex, lastIndex; //for faster iteration
 public:
@@ -325,7 +323,7 @@ public:
 };
 
 template <typename KeyType, typename ValueType>
-class Node
+class HashMap<KeyType, ValueType>::Node
 {
 public:
     friend class HashMap<KeyType, ValueType>;
@@ -364,7 +362,7 @@ public:
     using iterator_category = std::bidirectional_iterator_tag;
     using value_type = typename HashMap::value_type;
     using pointer = const typename HashMap::value_type*;
-    using node = Node<KeyType, ValueType>;
+    using node = HashMap<KeyType, ValueType>::Node;
     using hash_map = HashMap<KeyType, ValueType>;
 
 private:

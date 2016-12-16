@@ -9,8 +9,6 @@
 
 namespace aisdi
 {
-template <typename KeyType, typename ValueType>
-class Node;
 
 template <typename KeyType, typename ValueType>
 class TreeMap
@@ -27,7 +25,8 @@ public:
     class Iterator;
     using iterator = Iterator;
     using const_iterator = ConstIterator;
-    using node = Node<KeyType, ValueType>;
+    class Node;
+    using node = Node;
 
 private:
     node *sentinel, *root;
@@ -375,7 +374,7 @@ public:
 };
 
 template <typename KeyType, typename ValueType>
-class Node
+class TreeMap<KeyType, ValueType>::Node
 {
 public:
     friend class TreeMap<KeyType, ValueType>;
@@ -414,7 +413,7 @@ public:
     using iterator_category = std::bidirectional_iterator_tag;
     using value_type = typename TreeMap::value_type;
     using pointer = const typename TreeMap::value_type*;
-    using node = Node<KeyType, ValueType>;
+    using node = TreeMap<KeyType, ValueType>::Node;
     using tree_map = TreeMap<KeyType, ValueType>;
 
 private:

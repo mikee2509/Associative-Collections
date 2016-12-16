@@ -84,7 +84,7 @@ private:
         for(size_type i = firstIndex; i<=lastIndex; ++i)
         {
             table[i] = other.table[i];
-            other.table[i] = nullptr;
+            if(i < HASH_SIZE) other.table[i] = nullptr;
         }
         other.firstIndex = other.lastIndex = HASH_SIZE;
     }

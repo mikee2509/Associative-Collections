@@ -216,17 +216,14 @@ public:
         {
             if(temp->right == nullptr) //no children (*temp* can't be root)
             {
-                //std::cout << "1. no children (*temp* can't be root)" << std::endl;
                 if(isRightChild) temp->parent->right = nullptr;
                 else temp->parent->left = nullptr;
                 delete temp;
             }
             else //one child on the right (can be sentinel node)
             {
-                //std::cout << "2. one child on the right (can be sentinel node)" << std::endl;
                 if(isNotRoot)
                 {
-                    //std::cout << "2.1 ...isNotRoot" << std::endl;
                     if(isRightChild) temp->parent->right = temp->right;
                     else temp->parent->left = temp->right;
                 }
@@ -241,7 +238,6 @@ public:
         {
             if(temp->right == nullptr) //one child on the left (*temp* can't be root)
             {
-                //std::cout << "3. one child on the left (*temp* can't be root)" << std::endl;
                 temp->left->parent = temp->parent;
                 if(isRightChild) temp->parent->right = temp->left;
                 else temp->parent->left = temp->left;
@@ -249,7 +245,6 @@ public:
             }
             else if(temp->right == sentinel) //two children, sentinel on the right (*temp* is root)
             {
-                //std::cout << "4. two children, sentinel on the right (*temp* is root)" << std::endl;
                 node* nd = temp->left;
                 while(nd->right != nullptr)
                     nd = nd->right;
@@ -266,7 +261,6 @@ public:
                 node* nd;
                 if(inOrderSuccessorRecentlyUsed) //use in-order predecessor this time
                 {
-                    //std::cout << "5. use in-order predecessor this time" << std::endl;
                     nd = temp->left;
                     while(nd->right != nullptr)
                         nd = nd->right;
@@ -279,7 +273,6 @@ public:
                 }
                 else //use in-order successor
                 {
-                    //std::cout << "6. use in-order successor" << std::endl;
                     nd = temp->right;
                     while(nd->left != nullptr)
                         nd = nd->left;

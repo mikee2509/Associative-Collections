@@ -3,7 +3,6 @@
 #include <cstdint>
 #include <string>
 #include <map>
-//#include <iostream>
 
 #include <boost/test/unit_test.hpp>
 #include <boost/mpl/list.hpp>
@@ -597,7 +596,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(GivenTwoMapsWithDifferentKeys_WhenComparingThem_Th
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(Remove_MegaTest, K, TestedKeyTypes)
 {
-    //std::cout << "MY TESTS: \n";
     Map<K> map = { { 42, "Alice" }, { 27, "Bob" } };
     map.remove(27);
     thenMapContainsItems(map, { { 42, "Alice" } });
@@ -656,9 +654,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(Remove_MegaTest, K, TestedKeyTypes)
     });
 
     BOOST_CHECK(map.getSize() == 10);
-//    for(auto it = map.begin(); it != map.end(); ++it)
-//        std::cout << (*it).first << "  ";
-//    std::cout << std::endl;
 }
 
 // ConstIterator is tested via Iterator methods.
